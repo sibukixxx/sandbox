@@ -1,0 +1,21 @@
+# Rust
+**/target/
+# Lean / Lake
+**/.lake/
+# MoonBit
+**/_build/
+**/.mooncakes/
+# OCaml / dune
+**/_build/
+# Dafny (生成物)
+**/*.csproj
+**/*.cs
+**/*-py/
+**/*-js/
+**/*-go/
+# Quint
+**/_apalache-out/
+# エディタ
+.vscode/
+.idea/
+.DS_Store

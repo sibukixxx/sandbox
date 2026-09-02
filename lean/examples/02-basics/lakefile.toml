@@ -1,0 +1,9 @@
+name = "basics"
+defaultTargets = ["basics"]
+
+[[lean_lib]]
+name = "Basics"
+
+[[lean_exe]]
+name = "basics"
+root = "Main"

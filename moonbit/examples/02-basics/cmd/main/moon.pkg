@@ -1,0 +1,5 @@
+import {
+  "learn/basics" @basics,
+}
+
+pkgtype(kind: "executable")

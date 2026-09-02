@@ -1,0 +1,5 @@
+// サブパッケージ "learn/modules/geometry/shapes"。
+// 親パッケージとは独立で、使うには明示的に import する。
+import {
+  "learn/modules/geometry",
+}

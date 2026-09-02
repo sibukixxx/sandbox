@@ -7,8 +7,10 @@
 
 1. **ドキュメント** (`docs/`) — 日本語の解説。読めば概念が分かる。
 2. **サンプルコード** (`examples/`) — 実際にビルド・実行・検証できるコード。
+3. **言語横断比較** (`comparison/`) — 同じテーマを 7 言語横並びで。学習ブログ・比較サイトの記事の下書きになる。
 
 ドキュメントとサンプルは章番号で 1:1 に対応させ、「読む → 動かす」を往復できるようにする。
+比較ドキュメントも同じ章番号を使い、`comparison/03-*.md` は各言語の `docs/03-*.md` を横に並べたものにする。
 
 ## 2. 対象言語
 
@@ -50,6 +52,13 @@
 │   ├── README.md
 │   ├── docs/
 │   └── examples/
+├── comparison/              # 言語横断比較 (ブログ・比較サイト用素材)
+│   ├── README.md            # 使い方、比較の軸、題材の統一ルール
+│   ├── _article-template.md # 記事の雛形
+│   ├── 00-overview.md       # 7 言語の一覧表、テーマ別マップ
+│   ├── 02-hello-world.md    # 章番号は docs/ と揃える
+│   ├── 03-conditionals.md
+│   └── 06-modules.md
 ├── moonbit/
 ├── oxcaml/
 ├── lean/
@@ -76,14 +85,14 @@
 │   ├── 03-basics.md         # 変数・関数・制御構造・基本型
 │   ├── 04-data.md           # データ構造、パターンマッチ、コレクション
 │   ├── 05-core.md           # その言語の「目玉」概念 (言語ごとにタイトルを変える)
-│   ├── 06-project.md        # パッケージ管理、テスト、ビルド、複数ファイル
+│   ├── 06-modules.md        # モジュール、パッケージ管理、複数ファイル、テスト
 │   └── 99-resources.md      # 公式ドキュメント、良い記事、コミュニティ
 ├── examples/
 │   ├── 01-hello-world/      # docs/02 に対応
 │   ├── 02-basics/           # docs/03 に対応
 │   ├── 03-data/             # docs/04 に対応
 │   ├── 04-core/             # docs/05 に対応
-│   └── 05-project/          # docs/06 に対応 (小さな完結プロジェクト)
+│   └── 05-modules/          # docs/06 に対応 (複数モジュール構成の小プロジェクト)
 └── .tool-versions           # 言語・ツールのバージョン固定 (言語ごとに形式は変えてよい)
 ```
 
@@ -109,6 +118,15 @@
 - コードブロックには必ず言語識別子をつける（`moonbit`, `ocaml`, `lean`, `quint`, `verse`, `dafny`, `rust`）。
 - **「他の言語ではこう書く」比較** を各章に 1 つ以上入れる。差がつく理由を実感させるため。
 - 検証系言語（Lean, Dafny, Quint）では **失敗する例** も必ず載せ、エラーメッセージの読み方を書く。
+
+### 3.3 `comparison/` の規約 (ブログ・比較サイト向け)
+
+- ファイル名は `NN-<theme>.md` で、`NN` は各言語の `docs/NN-*.md` と同じ章番号にする。
+- 構成は固定: **一覧表 → 言語ごとのコード (examples へのリンク付き) → 違いの考察 → どれを選ぶか**。
+  記事にするときはこの順のまま使える。雛形は `comparison/_article-template.md`。
+- 題材は全言語で統一する (`sign`, `fizzbuzz`, `Shape`, `checkedDiv`, `Meters`)。新しいテーマを足すときも 1 つの題材を決めてから書く。
+- コードは `examples/` のものを短縮して載せ、必ずリンクで元を指す。動作未確認の言語 (Verse) は表と本文の両方に明記する。
+- 一覧表の ✅ / ❌ は「自然に書ける / 回り道が要る」の意味。
 
 ## 5. 言語別の設計
 
@@ -230,17 +248,33 @@
 | Dafny | `dafny verify` + `dafny run` で期待出力と diff |
 | Rust | `cargo test` (host) + `cargo build --target <target>` + QEMU 実行 |
 
+### 5.8 動作確認の記録 (2026-09-02)
+
+| 言語 | 確認したツールチェイン | 備考 |
+|---|---|---|
+| MoonBit | moon 0.1.20260827 | `moon.mod` / `moon.pkg` は新形式 (旧 JSON 形式ではない) |
+| OxCaml | OCaml 4.14.1 (ocamlopt 直接) | dune / OxCaml switch は未確認。OxCaml 固有構文はコメント内に留めた |
+| Lean 4 | v4.33.1 | `lakefile.toml` 形式 |
+| Quint | 0.32.0 + Rust 評価器 v0.6.0 | 評価器は GitHub Releases から手動取得 |
+| Verse | 未確認 | UEFN が必要 |
+| Dafny | 4.10.0 | 実行は `--target:js` (dotnet 不在のため)。`bignumber.js` が必要 |
+| Rust | cargo 1.94.1 stable | `thumbv7em-none-eabihf` ビルドも確認 |
+
 ## 8. 実装フェーズ
 
 | Phase | 内容 | 完了条件 |
 |---|---|---|
-| 0 | 本設計、ディレクトリ骨組み、各言語 README | 本コミット |
+| 0 | 本設計、ディレクトリ骨組み、各言語 README | 完了 |
 | 1 | 全言語の `docs/00〜02` + `examples/01-hello-world` | 全言語でハローワールドが（Verse を除き）ローカルで動く |
+| 1' | 全言語の `docs/03`, `06` + `examples/02-basics`, `05-modules` (条件分岐・モジュール) | 完了 (Verse 以外は動作確認済み) |
+| 1'' | `comparison/` (一覧、Hello World、条件分岐、モジュールの横断比較) | 完了 |
 | 2 | `scripts/` と CI | main へのマージで CI が緑 |
 | 3 | `docs/03〜04` + `examples/02〜03` | 基本文法とデータ構造 |
 | 4 | `docs/05` + `examples/04` | 各言語の目玉概念 |
-| 5 | `docs/06`, `99` + `examples/05` | 小プロジェクトで締める |
+| 5 | `docs/06`, `99` + `examples/05` | モジュール構成の小プロジェクトで締める |
 | 6 | 残り 3 言語の選定と Phase 1〜5 の繰り返し | 10 言語揃う |
+
+各 Phase で `docs/NN` を全言語分書いたら、同じ番号の `comparison/NN-*.md` も書く。
 
 Phase 1 は **1 言語 1 PR** で進め、`_template/` の使い勝手を早期に検証する。
 

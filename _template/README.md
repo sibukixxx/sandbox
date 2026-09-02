@@ -25,7 +25,7 @@
 | 3 | [03-basics.md](./docs/03-basics.md) | [02-basics](./examples/02-basics/) | 変数・関数・制御構造 |
 | 4 | [04-data.md](./docs/04-data.md) | [03-data](./examples/03-data/) | データ構造・パターンマッチ |
 | 5 | [05-core.md](./docs/05-core.md) | [04-core](./examples/04-core/) | {{目玉概念}} |
-| 6 | [06-project.md](./docs/06-project.md) | [05-project](./examples/05-project/) | パッケージ管理・テスト |
+| 6 | [06-modules.md](./docs/06-modules.md) | [05-modules](./examples/05-modules/) | モジュール・パッケージ管理・テスト |
 | 99 | [99-resources.md](./docs/99-resources.md) | — | 公式資料・記事 |
 
 ## 検証

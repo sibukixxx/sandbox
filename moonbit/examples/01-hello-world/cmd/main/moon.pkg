@@ -1,0 +1,2 @@
+// パッケージ定義。ディレクトリごとに 1 つ置く。
+pkgtype(kind: "executable")

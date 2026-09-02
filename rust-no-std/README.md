@@ -36,14 +36,14 @@ cargo --version
 |---|---|---|---|
 | 0 | docs/00-why.md | — | 位置づけ、向く用途 |
 | 1 | docs/01-setup.md | — | インストール、バージョン固定 |
-| 2 | docs/02-hello-world.md | examples/01-hello-world | 最小プログラムとビルド |
-| 3 | docs/03-basics.md | examples/02-basics | 変数・関数・制御構造 |
+| 2 | [docs/02-hello-world.md](./docs/02-hello-world.md) | [examples/01-hello-world](./examples/01-hello-world/) | 最小プログラムとビルド |
+| 3 | [docs/03-basics.md](./docs/03-basics.md) | [examples/02-basics](./examples/02-basics/) | 条件分岐を関数として書く |
 | 4 | docs/04-data.md | examples/03-data | データ構造・パターンマッチ |
 | 5 | docs/05-core.md | examples/04-core | **#![no_std] / #![no_main] / panic_handler とベアメタル実行** |
-| 6 | docs/06-project.md | examples/05-project | パッケージ管理・テスト |
+| 6 | [docs/06-modules.md](./docs/06-modules.md) | [examples/05-modules](./examples/05-modules/) | モジュールの扱い |
 | 99 | docs/99-resources.md | — | 公式資料・記事 |
 
-(ドキュメントとサンプルは Phase 1 以降で順次追加。設計は [DESIGN.md](../DESIGN.md) 参照)
+(リンクのある章は作成済み。残りは順次追加。設計は [DESIGN.md](../DESIGN.md) 参照)
 
 ## 検証 (Phase 2)
 
