@@ -1,0 +1,10 @@
+// "foreign_library" にすると、このパッケージ単体で WASM / JS / C の成果物を生成する。
+// エクスポートする関数には `#export_name("...")` 属性を付ける (lib.mbt 参照)。
+import {
+  "moonbitlang/core/strconv",
+}
+
+pkgtype(kind: "foreign_library")
+options(
+  "link": { "js": { "format": "esm" } },
+)

@@ -28,6 +28,7 @@
 | [comparison/02-hello-world.md](./comparison/02-hello-world.md) | Hello World の横断比較 |
 | [comparison/03-conditionals.md](./comparison/03-conditionals.md) | 条件分岐を関数として書く、の横断比較 |
 | [comparison/04-data.md](./comparison/04-data.md) | データ構造の横断比較 |
+| [comparison/05-core.md](./comparison/05-core.md) | 各言語の目玉概念の横断比較 |
 | [comparison/06-modules.md](./comparison/06-modules.md) | モジュールの扱いの横断比較 |
 | [comparison/_article-template.md](./comparison/_article-template.md) | 記事の雛形 |
 
@@ -49,11 +50,13 @@
 │   ├── 02-hello-world.md
 │   ├── 03-basics.md   # 条件分岐を関数として書く
 │   ├── 04-data.md     # データ構造
+│   ├── 05-core.md     # その言語の目玉概念
 │   └── 06-modules.md  # モジュールの扱い
 └── examples/          # docs の章に対応する実行可能サンプル
     ├── 01-hello-world/
     ├── 02-basics/
     ├── 03-data/
+    ├── 04-core/
     └── 05-modules/
 ```
 
@@ -64,15 +67,15 @@
 
 | 言語 | 00 なぜ | 01 設定 | 02 Hello World | 03 条件分岐 | 04 データ | 05 目玉概念 | 06 モジュール | CI |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| MoonBit | ✅ | ✅ | ✅ | ✅ | ✅ | | ✅ | |
-| OxCaml | ✅ | ✅ | ✅ | ✅ | ✅ | | ✅ | |
-| Lean 4 | ✅ | ✅ | ✅ | ✅ | ✅ | | ✅ | |
-| Quint | ✅ | ✅ | ✅ | ✅ | ✅ | | ✅ | |
-| Verse | ✅ | ✅ | 📝 | 📝 | 📝 | | 📝 | 対象外 |
-| Dafny | ✅ | ✅ | ✅ | ✅ | ✅ | | ✅ | |
-| Rust no_std | ✅ | ✅ | ✅ | ✅ | ✅ | | ✅ | |
+| MoonBit | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | |
+| OxCaml | ✅ | ✅ | ✅ | ✅ | ✅ | 📝 | ✅ | |
+| Lean 4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | |
+| Quint | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | |
+| Verse | ✅ | ✅ | 📝 | 📝 | 📝 | 📝 | 📝 | 対象外 |
+| Dafny | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | |
+| Rust no_std | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | |
 
-✅ = ドキュメント + サンプルあり、ローカルで動作確認済み / 📝 = 記述のみ (UEFN での動作未確認)
+✅ = ドキュメント + サンプルあり、ローカルで動作確認済み / 📝 = 記述のみ (Verse は UEFN、OxCaml 第 5 章は OxCaml switch での動作未確認)
 
 ## 新しい言語を追加する
 

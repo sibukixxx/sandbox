@@ -11,6 +11,7 @@
 | [02-hello-world.md](./02-hello-world.md) | Hello World を 7 言語で横並び | 「7 言語で Hello World を書いて分かった、エントリポイントの思想の違い」 |
 | [03-conditionals.md](./03-conditionals.md) | 条件分岐を関数として書く | 「if は文か式か。7 言語の条件分岐比較」 |
 | [04-data.md](./04-data.md) | データ構造 (レコード・和型・再帰型・List・Map) | 「再帰型が書けない言語がある。7 言語のデータ構造比較」 |
+| [05-core.md](./05-core.md) | 各言語の目玉概念 (証明、モード、状態機械、効果、契約、ベアメタル、WASM) | 「この言語を学ぶ理由はこれ。7 言語の目玉機能」 |
 | [06-modules.md](./06-modules.md) | モジュールの扱い | 「ファイル・フォルダ・宣言。7 言語のモジュール設計比較」 |
 | [_article-template.md](./_article-template.md) | 記事の雛形 | 新しいテーマの記事を書くときにコピーする |
 

@@ -39,7 +39,7 @@ cargo --version
 | 2 | [docs/02-hello-world.md](./docs/02-hello-world.md) | [examples/01-hello-world](./examples/01-hello-world/) | 最小プログラムとビルド |
 | 3 | [docs/03-basics.md](./docs/03-basics.md) | [examples/02-basics](./examples/02-basics/) | 条件分岐を関数として書く |
 | 4 | [docs/04-data.md](./docs/04-data.md) | [examples/03-data](./examples/03-data/) | データ構造・パターンマッチ |
-| 5 | docs/05-core.md | examples/04-core | **#![no_std] / #![no_main] / panic_handler とベアメタル実行** |
+| 5 | [docs/05-core.md](./docs/05-core.md) | [examples/04-core](./examples/04-core/) | **#![no_std] / #![no_main] / panic_handler とベアメタル実行** |
 | 6 | [docs/06-modules.md](./docs/06-modules.md) | [examples/05-modules](./examples/05-modules/) | モジュールの扱い |
 | 99 | docs/99-resources.md | — | 公式資料・記事 |
 

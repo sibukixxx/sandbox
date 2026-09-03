@@ -59,6 +59,7 @@
 │   ├── 02-hello-world.md    # 章番号は docs/ と揃える
 │   ├── 03-conditionals.md
 │   ├── 04-data.md
+│   ├── 05-core.md
 │   └── 06-modules.md
 ├── moonbit/
 ├── oxcaml/
@@ -254,12 +255,12 @@
 | 言語 | 確認したツールチェイン | 備考 |
 |---|---|---|
 | MoonBit | moon 0.1.20260827 | `moon.mod` / `moon.pkg` は新形式 (旧 JSON 形式ではない) |
-| OxCaml | OCaml 4.14.1 (ocamlopt 直接) | dune / OxCaml switch は未確認。OxCaml 固有構文はコメント内に留めた |
+| OxCaml | OCaml 4.14.1 (ocamlopt 直接) | dune / OxCaml switch は未確認 (コンパイラのソース取得がプロキシで 403)。第 5 章のみ OxCaml 固有構文を使い、未確認と明記 |
 | Lean 4 | v4.33.1 | `lakefile.toml` 形式 |
 | Quint | 0.32.0 + Rust 評価器 v0.6.0 | 評価器は GitHub Releases から手動取得 |
 | Verse | 未確認 | UEFN が必要 |
 | Dafny | 4.10.0 | 実行は `--target:js` (dotnet 不在のため)。`bignumber.js` が必要 |
-| Rust | cargo 1.94.1 stable | `thumbv7em-none-eabihf` ビルドも確認 |
+| Rust | cargo 1.94.1 stable | `thumbv7em-none-eabihf` ビルド、`thumbv7m-none-eabi` + QEMU 実行も確認 |
 
 ## 8. 実装フェーズ
 
@@ -271,7 +272,7 @@
 | 1'' | `comparison/` (一覧、Hello World、条件分岐、モジュールの横断比較) | 完了 |
 | 2 | `scripts/` と CI | main へのマージで CI が緑 |
 | 3 | `docs/03〜04` + `examples/02〜03` | 完了 (Verse 以外は動作確認済み)。`comparison/04-data.md` も作成 |
-| 4 | `docs/05` + `examples/04` | 各言語の目玉概念 |
+| 4 | `docs/05` + `examples/04` | 完了 (Verse と OxCaml は動作未確認)。`comparison/05-core.md` も作成 |
 | 5 | `docs/06`, `99` + `examples/05` | モジュール構成の小プロジェクトで締める |
 | 6 | 残り 3 言語の選定と Phase 1〜5 の繰り返し | 10 言語揃う |
 

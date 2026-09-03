@@ -1,0 +1,5 @@
+import {
+  "learn/core" @core,
+}
+
+pkgtype(kind: "executable")
