@@ -10,6 +10,7 @@
 | [00-overview.md](./00-overview.md) | 言語の一覧表 (系統、型、実行環境、ツール、目玉機能、学習コスト) | 「今学んでおくと差がつく言語 7 選」導入記事 |
 | [02-hello-world.md](./02-hello-world.md) | Hello World を 7 言語で横並び | 「7 言語で Hello World を書いて分かった、エントリポイントの思想の違い」 |
 | [03-conditionals.md](./03-conditionals.md) | 条件分岐を関数として書く | 「if は文か式か。7 言語の条件分岐比較」 |
+| [04-data.md](./04-data.md) | データ構造 (レコード・和型・再帰型・List・Map) | 「再帰型が書けない言語がある。7 言語のデータ構造比較」 |
 | [06-modules.md](./06-modules.md) | モジュールの扱い | 「ファイル・フォルダ・宣言。7 言語のモジュール設計比較」 |
 | [_article-template.md](./_article-template.md) | 記事の雛形 | 新しいテーマの記事を書くときにコピーする |
 
@@ -33,6 +34,8 @@
 | `Shape` (Circle / Rect) | 代数的データ型 + match、モジュール分割の題材 |
 | `checkedDiv` / `averageOfTwo` | Option 相当の扱い方 |
 | `Meters` | 別モジュールの小さな型 (newtype) |
+| `Item` (在庫) | レコード + List / Map の集計 (合計、在庫ありの filter、カテゴリ別) |
+| `Expr` (数式) | 再帰的な代数的データ型と再帰評価 |
 
 ## 記事化のルール
 

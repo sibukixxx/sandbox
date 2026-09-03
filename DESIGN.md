@@ -58,6 +58,7 @@
 │   ├── 00-overview.md       # 7 言語の一覧表、テーマ別マップ
 │   ├── 02-hello-world.md    # 章番号は docs/ と揃える
 │   ├── 03-conditionals.md
+│   ├── 04-data.md
 │   └── 06-modules.md
 ├── moonbit/
 ├── oxcaml/
@@ -265,11 +266,11 @@
 | Phase | 内容 | 完了条件 |
 |---|---|---|
 | 0 | 本設計、ディレクトリ骨組み、各言語 README | 完了 |
-| 1 | 全言語の `docs/00〜02` + `examples/01-hello-world` | 全言語でハローワールドが（Verse を除き）ローカルで動く |
+| 1 | 全言語の `docs/00〜02` + `examples/01-hello-world` | 完了 (Verse 以外は動作確認済み) |
 | 1' | 全言語の `docs/03`, `06` + `examples/02-basics`, `05-modules` (条件分岐・モジュール) | 完了 (Verse 以外は動作確認済み) |
 | 1'' | `comparison/` (一覧、Hello World、条件分岐、モジュールの横断比較) | 完了 |
 | 2 | `scripts/` と CI | main へのマージで CI が緑 |
-| 3 | `docs/03〜04` + `examples/02〜03` | 基本文法とデータ構造 |
+| 3 | `docs/03〜04` + `examples/02〜03` | 完了 (Verse 以外は動作確認済み)。`comparison/04-data.md` も作成 |
 | 4 | `docs/05` + `examples/04` | 各言語の目玉概念 |
 | 5 | `docs/06`, `99` + `examples/05` | モジュール構成の小プロジェクトで締める |
 | 6 | 残り 3 言語の選定と Phase 1〜5 の繰り返し | 10 言語揃う |
