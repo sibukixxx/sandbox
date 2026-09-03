@@ -1,0 +1,7 @@
+# Lake (Lean のビルドツール) の設定。
+name = "hello"
+defaultTargets = ["hello"]
+
+[[lean_exe]]
+name = "hello"
+root = "Main"

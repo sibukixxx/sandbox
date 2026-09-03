@@ -1,0 +1,5 @@
+name = "core"
+defaultTargets = ["Proofs"]
+
+[[lean_lib]]
+name = "Proofs"

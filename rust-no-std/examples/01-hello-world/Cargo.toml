@@ -1,0 +1,13 @@
+[package]
+name = "hello"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+# no_std では unwinding を行う仕組み (eh_personality) がないので abort にする
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

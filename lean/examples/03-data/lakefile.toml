@@ -1,0 +1,9 @@
+name = "data"
+defaultTargets = ["data"]
+
+[[lean_lib]]
+name = "Data"
+
+[[lean_exe]]
+name = "data"
+root = "Main"

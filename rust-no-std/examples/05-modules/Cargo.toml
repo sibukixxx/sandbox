@@ -1,0 +1,13 @@
+[package]
+name = "modules"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+# `alloc` を有効にすると Vec などヒープを使う API が生える (no_std のまま)
+alloc = []
+# `std` を有効にすると std 依存の API も生える (通常の Rust として使える)
+std = ["alloc"]
+
+[dependencies]

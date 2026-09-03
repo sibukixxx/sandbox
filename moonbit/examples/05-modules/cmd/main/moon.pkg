@@ -1,0 +1,8 @@
+// `@名前` でパッケージを参照する。`@shapes` のように別名も付けられる。
+import {
+  "learn/modules/geometry",
+  "learn/modules/geometry/shapes" @shapes,
+  "learn/modules/units",
+}
+
+pkgtype(kind: "executable")

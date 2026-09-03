@@ -1,0 +1,7 @@
+# `cargo run` で QEMU (Cortex-M3 評価ボード lm3s6965evb) を起動する
+[target.thumbv7m-none-eabi]
+runner = "qemu-system-arm -cpu cortex-m3 -machine lm3s6965evb -nographic -semihosting-config enable=on,target=native -kernel"
+rustflags = ["-C", "link-arg=-Tlink.x"]   # cortex-m-rt が提供するリンカスクリプト
+
+[build]
+target = "thumbv7m-none-eabi"

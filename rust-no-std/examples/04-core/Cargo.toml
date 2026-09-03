@@ -1,0 +1,16 @@
+[package]
+name = "baremetal"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cortex-m = "0.7"                # Cortex-M のレジスタ・命令
+cortex-m-rt = "0.7"             # リセットベクタ、スタック、.data/.bss の初期化 (= C の crt0)
+cortex-m-semihosting = "0.5"    # デバッガ / QEMU 経由でホストに文字を出す
+panic-halt = "1"                # パニック時に停止する panic_handler
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>MoonBit wasm-gc demo</title>
+<pre id="out"></pre>
+<script type="module">
+  // ブラウザから wasm-gc 出力を呼ぶ。`python3 -m http.server` などで配信して開く。
+  const { instance } = await WebAssembly.instantiateStreaming(
+    fetch("../_build/wasm-gc/release/build/core.wasm"),
+    { spectest: { print_char: (c) => (out.textContent += String.fromCharCode(c)) } },
+  );
+  out.textContent += `fib(20) = ${instance.exports.fib(20)}\n`;
+  out.textContent += `sum_to(100) = ${instance.exports.sum_to(100)}\n`;
+</script>

@@ -1,0 +1,11 @@
+name = "modules"
+defaultTargets = ["modules"]
+
+# ライブラリ。`Geometry.lean` をルートに、`Geometry/*.lean` を子モジュールとして持つ
+[[lean_lib]]
+name = "Geometry"
+
+# 実行ファイル。ライブラリを import して使う
+[[lean_exe]]
+name = "modules"
+root = "Main"
