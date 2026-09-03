@@ -1,0 +1,117 @@
+# 各言語の examples を検証する。ローカルと同じ scripts/check-<lang>.sh を呼ぶだけにしてある。
+# 変更された言語のジョブだけ走るように paths でフィルタする (Verse は対象外)。
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      moonbit: ${{ steps.f.outputs.moonbit }}
+      oxcaml: ${{ steps.f.outputs.oxcaml }}
+      lean: ${{ steps.f.outputs.lean }}
+      quint: ${{ steps.f.outputs.quint }}
+      dafny: ${{ steps.f.outputs.dafny }}
+      rust: ${{ steps.f.outputs.rust }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            moonbit: ['moonbit/**', 'scripts/**', '.github/**']
+            oxcaml: ['oxcaml/**', 'scripts/**', '.github/**']
+            lean: ['lean/**', 'scripts/**', '.github/**']
+            quint: ['quint/**', 'scripts/**', '.github/**']
+            dafny: ['dafny/**', 'scripts/**', '.github/**']
+            rust: ['rust-no-std/**', 'scripts/**', '.github/**']
+
+  moonbit:
+    needs: changes
+    if: needs.changes.outputs.moonbit == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+      - run: echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - run: ./scripts/check-moonbit.sh
+
+  oxcaml:
+    needs: changes
+    if: needs.changes.outputs.oxcaml == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # OxCaml switch の構築は長い (数十分) ので、標準 OCaml で章 2〜4, 6 を検証する。
+      # 04-core (OxCaml 固有) はスキップされる。OxCaml で検証するには
+      # ocaml/setup-ocaml の代わりに OxCaml 入り Docker イメージをキャッシュして使う (TODO)。
+      - uses: ocaml/setup-ocaml@v3
+        with: { ocaml-compiler: "5.2" }
+      - run: ./scripts/check-oxcaml.sh
+
+  lean:
+    needs: changes
+    if: needs.changes.outputs.lean == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+      - run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.elan/toolchains
+          key: elan-${{ hashFiles('lean/examples/*/lean-toolchain') }}
+      - run: ./scripts/check-lean.sh
+
+  quint:
+    needs: changes
+    if: needs.changes.outputs.quint == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i -g @informalsystems/quint@0.32.0
+      - run: ./scripts/check-quint.sh
+
+  dafny:
+    needs: changes
+    if: needs.changes.outputs.dafny == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i -g bignumber.js
+      - run: |
+          curl -fsSL -o dafny.zip https://github.com/dafny-lang/dafny/releases/download/v4.10.0/dafny-4.10.0-x64-ubuntu-20.04.zip
+          unzip -q dafny.zip -d "$HOME"
+          echo "$HOME/dafny" >> "$GITHUB_PATH"
+      - run: ./scripts/check-dafny.sh
+
+  rust:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: thumbv7em-none-eabihf,thumbv7m-none-eabi
+      - run: sudo apt-get update && sudo apt-get install -y qemu-system-arm
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust-no-std/examples/01-hello-world
+            rust-no-std/examples/02-basics
+            rust-no-std/examples/03-data
+            rust-no-std/examples/04-core
+            rust-no-std/examples/05-modules
+      - run: ./scripts/check-rust-no-std.sh

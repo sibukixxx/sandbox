@@ -68,11 +68,13 @@
 ├── verse/
 ├── dafny/
 ├── rust-no-std/
-├── scripts/                 # 各言語のセットアップ・検証スクリプト (Phase 2)
-│   ├── setup-<lang>.sh
+├── scripts/                 # 各言語の検証スクリプト (ローカルと CI で共通)
+│   ├── common.sh
+│   ├── check-all.sh
 │   └── check-<lang>.sh
-└── .github/workflows/       # CI (Phase 2)
-    └── ci.yml
+└── ci/
+    ├── README.md            # 有効化の手順
+    └── github-workflow-ci.yml   # .github/workflows/ci.yml にコピーして使う (変更された言語のジョブだけ走る)
 ```
 
 ### 3.1 各言語ディレクトリの共通構成
@@ -234,12 +236,13 @@
 | Dafny | `.tool-versions` にバージョン番号 |
 | Rust | `rust-toolchain.toml` |
 
-## 7. CI 設計 (Phase 2 で実装)
+## 7. CI 設計
 
 - GitHub Actions。言語ごとに独立ジョブ。`paths` フィルタで **変更された言語だけ** 走らせる。
 - 各ジョブは `scripts/check-<lang>.sh` を呼ぶだけにし、ローカルでも同じスクリプトで検証できるようにする。
-- 環境構築が重い言語 (OxCaml, Lean+Mathlib) は Docker イメージを GHCR にキャッシュ。
+- 環境構築が重い言語 (OxCaml, Lean+Mathlib) は Docker イメージを GHCR にキャッシュ (未実装。現状 OxCaml ジョブは標準 OCaml で 04-core 以外を検証)。
 - Verse は CI 対象外（§5.5）。
+- ワークフロー定義は `ci/github-workflow-ci.yml`。`.github/workflows/` へのコピーは手動 (`ci/README.md`)。GitHub Actions 上での実行は未確認。ローカルでは `scripts/check-all.sh` で全言語 (Verse 除く) が通る。
 
 | 言語 | check スクリプトの内容 |
 |---|---|
@@ -270,10 +273,10 @@
 | 1 | 全言語の `docs/00〜02` + `examples/01-hello-world` | 完了 (Verse 以外は動作確認済み) |
 | 1' | 全言語の `docs/03`, `06` + `examples/02-basics`, `05-modules` (条件分岐・モジュール) | 完了 (Verse 以外は動作確認済み) |
 | 1'' | `comparison/` (一覧、Hello World、条件分岐、モジュールの横断比較) | 完了 |
-| 2 | `scripts/` と CI | main へのマージで CI が緑 |
+| 2 | `scripts/` と CI | `scripts/check-*.sh` 作成、ローカルで全言語 (Verse 除く) 緑。ワークフロー定義は `ci/` に作成 (App の権限の都合で `.github/workflows/` には未配置) |
 | 3 | `docs/03〜04` + `examples/02〜03` | 完了 (Verse 以外は動作確認済み)。`comparison/04-data.md` も作成 |
 | 4 | `docs/05` + `examples/04` | 完了 (Verse と OxCaml は動作未確認)。`comparison/05-core.md` も作成 |
-| 5 | `docs/06`, `99` + `examples/05` | モジュール構成の小プロジェクトで締める |
+| 5 | `docs/06`, `99` + `examples/05` | 完了 |
 | 6 | 残り 3 言語の選定と Phase 1〜5 の繰り返し | 10 言語揃う |
 
 各 Phase で `docs/NN` を全言語分書いたら、同じ番号の `comparison/NN-*.md` も書く。

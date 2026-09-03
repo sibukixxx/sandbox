@@ -39,11 +39,11 @@ OxCaml は活発に変化中。バージョンは switch 名 + opam-repository �
 | 4 | [docs/04-data.md](./docs/04-data.md) | [examples/03-data](./examples/03-data/) | データ構造・パターンマッチ |
 | 5 | [docs/05-core.md](./docs/05-core.md) | [examples/04-core](./examples/04-core/) | **モード (local / unique / once) と unboxed 型** |
 | 6 | [docs/06-modules.md](./docs/06-modules.md) | [examples/05-modules](./examples/05-modules/) | モジュールの扱い |
-| 99 | docs/99-resources.md | — | 公式資料・記事 |
+| 99 | [docs/99-resources.md](./docs/99-resources.md) | — | 公式資料・記事 |
 
-(リンクのある章は作成済み。残りは順次追加。設計は [DESIGN.md](../DESIGN.md) 参照)
+(全章作成済み。設計は [DESIGN.md](../DESIGN.md) 参照)
 
-## 検証 (Phase 2)
+## 検証
 
 ```sh
 ../scripts/check-oxcaml.sh   # 各 example で dune build && dune test (Docker イメージをキャッシュ)
