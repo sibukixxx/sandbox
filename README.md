@@ -1,11 +1,18 @@
-# 今学んでおくと差がつくプログラミング言語10選
+# Programming Languages Sandbox
 
-「今学んでおくと差がつく」言語を 1 言語 1 ディレクトリで扱い、
-**ハローワールドから基本的な使い方まで** をドキュメントと実行できるサンプルコードで残す学習リポジトリです。
+実験的なプログラミング言語の学習・比較リポジトリ。各言語をドキュメント + 実行可能なサンプルコードで扱っています。
 
-設計方針・進め方は [DESIGN.md](./DESIGN.md) を参照してください。
+## 言語
 
-## 言語一覧
+- MoonBit (WASM-first 関数型言語)
+- OxCaml (Jane Street 製 OCaml 拡張)
+- Lean 4 (定理証明器兼関数型言語)
+- Quint (分散システム仕様記述言語)
+- Verse (Epic/UEFN 関数論理型言語)
+- Dafny (検証指向言語)
+- Rust no_std (標準ライブラリなし Rust)
+
+## 構成
 
 | # | ディレクトリ | 言語 | 一言で | 差がつくポイント |
 |---|---|---|---|---|
@@ -20,13 +27,15 @@
 | 9 | [`gleam/`](./gleam/) | Gleam | BEAM 上の静的型付き関数型言語 | 型付き OTP アクター、Erlang / JS 両ターゲット |
 | 10 | [`koka/`](./koka/) | Koka | 効果システムを中心にした関数型言語 | 代数的効果とハンドラ、効果型 |
 
-## 言語横断で比較する (ブログ・比較サイト用)
+各言語ディレクトリ (`<lang>/`) は：
+- `docs/` - ドキュメント (なぜ学ぶか、セットアップ、基本機能)
+- `examples/` - 実行可能なサンプルコード
 
-同じテーマを 7 言語横並びで見たいときは [`comparison/`](./comparison/) を読む。記事の下書きにそのまま使える構成になっている。
+`comparison/` ディレクトリでは同じテーマを複数言語で横断比較しています。
 
 | ファイル | 内容 |
 |---|---|
-| [comparison/00-overview.md](./comparison/00-overview.md) | 7 言語の一覧表 (系統・型・実行環境・ツール・目玉機能・学習コスト) とテーマ別マップ |
+| [comparison/00-overview.md](./comparison/00-overview.md) | 10 言語の一覧表 (系統・型・実行環境・ツール・目玉機能・学習コスト) とテーマ別マップ |
 | [comparison/02-hello-world.md](./comparison/02-hello-world.md) | Hello World の横断比較 |
 | [comparison/03-conditionals.md](./comparison/03-conditionals.md) | 条件分岐を関数として書く、の横断比較 |
 | [comparison/04-data.md](./comparison/04-data.md) | データ構造の横断比較 |
@@ -93,8 +102,4 @@ DAFNY=/path/to/dafny ./scripts/check-dafny.sh   # バイナリの場所を指定
 KOKA=/path/to/koka ./scripts/check-koka.sh
 ```
 
-各スクリプトは `examples/` をビルド・テスト・実行し、`ok` / `FAIL` を表示する。GitHub Actions 用の定義は `ci/github-workflow-ci.yml` にあり、同じスクリプトを呼ぶ (有効化の手順は `ci/README.md`)。
-
-## 新しい言語を追加する
-
-`_template/` をコピーして始めます。手順は [DESIGN.md §10](./DESIGN.md#10-追加時の手順_template-の使い方) を参照。
+詳細は [DESIGN.md](./DESIGN.md) を参照してください。
