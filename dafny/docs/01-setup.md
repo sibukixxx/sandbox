@@ -37,7 +37,7 @@ dafny --version    # 4.10.0+...
 
 ## バージョン固定
 
-`.tool-versions` (作成予定) にバージョン番号を書く。Dafny はメジャーバージョン間で構文が変わることがある (3 → 4 で `function method` が `function` になった等)。
+`.tool-versions` にバージョン番号を書く。Dafny はメジャーバージョン間で構文が変わることがある (3 → 4 で `function method` が `function` になった等)。
 
 ## エディタ
 

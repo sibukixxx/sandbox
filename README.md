@@ -16,7 +16,9 @@
 | 5 | [`verse/`](./verse/) | Verse | Epic (UEFN) の関数論理型言語 | failure context、トランザクション、効果システム |
 | 6 | [`dafny/`](./dafny/) | Dafny | 検証指向言語 | 事前/事後条件をコンパイラが証明 |
 | 7 | [`rust-no-std/`](./rust-no-std/) | Rust (`no_std`) | 標準ライブラリなし Rust | ベアメタル・組込み・カーネル空間 |
-| 8〜10 | 未定 | — | — | 候補は [DESIGN.md §9](./DESIGN.md#9-残り-3-枠の候補) |
+| 8 | [`zig/`](./zig/) | Zig | C の後継を狙うシステム言語 | comptime、明示的アロケータ、クロスコンパイル |
+| 9 | [`gleam/`](./gleam/) | Gleam | BEAM 上の静的型付き関数型言語 | 型付き OTP アクター、Erlang / JS 両ターゲット |
+| 10 | [`koka/`](./koka/) | Koka | 効果システムを中心にした関数型言語 | 代数的効果とハンドラ、効果型 |
 
 ## 言語横断で比較する (ブログ・比較サイト用)
 
@@ -37,9 +39,11 @@
 | テーマ | 言語 |
 |---|---|
 | 形式検証・証明 | Lean, Dafny, Quint |
-| 型システムの先端 | OxCaml, Lean, Verse |
-| 低レイヤ・性能 | Rust no_std, OxCaml, MoonBit (WASM) |
-| 新しい実行環境 | MoonBit (WASM/JS), Verse (UEFN), Rust no_std (組込み) |
+| 型システムの先端 | OxCaml, Lean, Verse, Koka |
+| 効果システム | Koka, Verse |
+| 低レイヤ・性能 | Rust no_std, Zig, OxCaml, MoonBit (WASM) |
+| 並行・分散 | Gleam (BEAM), Quint (設計検証) |
+| 新しい実行環境 | MoonBit (WASM/JS), Verse (UEFN), Rust no_std (組込み), Gleam (BEAM/JS) |
 
 ## 各言語ディレクトリの読み方
 
@@ -74,15 +78,19 @@
 | Verse | ✅ | ✅ | 📝 | 📝 | 📝 | 📝 | 📝 | ✅ | 対象外 |
 | Dafny | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Rust no_std | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Zig | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Gleam | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Koka | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ✅ = ドキュメント + サンプルあり、ローカルで動作確認済み / 📝 = 記述のみ (Verse は UEFN、OxCaml 第 5 章は OxCaml switch での動作未確認)
 
 ## 検証する
 
 ```sh
-./scripts/check-all.sh            # 全言語 (Verse を除く)
+./scripts/check-all.sh            # 全言語 (Verse を除く 9 言語)
 ./scripts/check-lean.sh           # 1 言語だけ
 DAFNY=/path/to/dafny ./scripts/check-dafny.sh   # バイナリの場所を指定
+KOKA=/path/to/koka ./scripts/check-koka.sh
 ```
 
 各スクリプトは `examples/` をビルド・テスト・実行し、`ok` / `FAIL` を表示する。GitHub Actions 用の定義は `ci/github-workflow-ci.yml` にあり、同じスクリプトを呼ぶ (有効化の手順は `ci/README.md`)。

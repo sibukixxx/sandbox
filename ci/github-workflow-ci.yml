@@ -18,6 +18,9 @@ jobs:
       quint: ${{ steps.f.outputs.quint }}
       dafny: ${{ steps.f.outputs.dafny }}
       rust: ${{ steps.f.outputs.rust }}
+      zig: ${{ steps.f.outputs.zig }}
+      gleam: ${{ steps.f.outputs.gleam }}
+      koka: ${{ steps.f.outputs.koka }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -30,6 +33,9 @@ jobs:
             quint: ['quint/**', 'scripts/**', '.github/**']
             dafny: ['dafny/**', 'scripts/**', '.github/**']
             rust: ['rust-no-std/**', 'scripts/**', '.github/**']
+            zig: ['zig/**', 'scripts/**', '.github/**']
+            gleam: ['gleam/**', 'scripts/**', '.github/**']
+            koka: ['koka/**', 'scripts/**', '.github/**']
 
   moonbit:
     needs: changes
@@ -115,3 +121,40 @@ jobs:
             rust-no-std/examples/04-core
             rust-no-std/examples/05-modules
       - run: ./scripts/check-rust-no-std.sh
+
+  zig:
+    needs: changes
+    if: needs.changes.outputs.zig == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          curl -fsSL https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz | tar -xJ -C "$HOME"
+          echo "$HOME/zig-x86_64-linux-0.16.0" >> "$GITHUB_PATH"
+      - run: ./scripts/check-zig.sh
+
+  gleam:
+    needs: changes
+    if: needs.changes.outputs.gleam == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "27"
+          gleam-version: "1.18.0"
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: ./scripts/check-gleam.sh
+
+  koka:
+    needs: changes
+    if: needs.changes.outputs.koka == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p "$HOME/koka"
+          curl -fsSL https://github.com/koka-lang/koka/releases/download/v3.2.2/koka-v3.2.2-linux-x64.tar.gz | tar -xz -C "$HOME/koka"
+          echo "$HOME/koka/bin" >> "$GITHUB_PATH"
+      - run: ./scripts/check-koka.sh

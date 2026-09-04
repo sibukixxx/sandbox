@@ -1,0 +1,2 @@
+dafny 4.10.0
+# 実行は --target:js (nodejs 22 + bignumber.js)

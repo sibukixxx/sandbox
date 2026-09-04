@@ -1,4 +1,4 @@
-# 04. データ構造、を 7 言語で
+# 04. データ構造、を 10 言語で
 
 ## 結論 (一覧表)
 
@@ -11,6 +11,9 @@
 | Verse | `struct` (値型) | `enum` (ペイロード不可) | ❌ (クラス継承で代用) | `?T` | `for` 式 (map + filter) | `[K]V` (組込み) | 値型 / `var` で可変 |
 | Dafny | `datatype` (名前付き) | `datatype` | ✅ 直接 | 自作 or `Std.Wrappers` | 再帰で書く | `map<K, V>` (組込み) | 不変 (class だけ可変) |
 | Rust no_std | `struct` | `enum` | ⚠️ 参照 + ライフタイム (Box は alloc) | `Option` | イテレータ (core) | ❌ core / `BTreeMap` は alloc | 可変 |
+| Zig | `struct` (既定値可) | `enum` / `union(enum)` | ⚠️ 自己参照ポインタ | `?T` | `for` で書く | `StringHashMap` (アロケータ必須) | 可変 |
+| Gleam | カスタム型 (ラベル付き) | カスタム型 | ✅ 直接 | `Option` / `Result` | `list.map` / `fold` / `find` | `Dict` (組込み、不変) | 不変 |
+| Koka | `struct` (アクセサ関数) | `type` | ✅ 直接 (`div` 効果が付く) | `maybe` | `map` / `filter` / `foldl` | 連想リスト (標準に Map は薄い) | 不変 (Perceus で in-place 最適化) |
 
 ## 言語ごとのコード
 
@@ -141,11 +144,64 @@ pub fn value_by_category(items: &[Item]) -> [u32; 2] {   // Map の代わりに 
 
 `Vec` / `Box` / `BTreeMap` は `alloc`、`HashMap` は `std` 限定。ヒープなしでは参照と固定長配列で組む。
 
+### Zig → [examples](../zig/examples/03-data/)
+
+```zig
+const Expr = union(enum) {
+    num: i64,
+    add: [2]*const Expr,
+    mul: [2]*const Expr,
+};
+
+fn namesSorted(alloc: std.mem.Allocator, items: []const Item) ![][]const u8 {
+    var list: std.ArrayList([]const u8) = .empty;
+    for (items) |i| try list.append(alloc, i.name);
+    return list.toOwnedSlice(alloc);
+}
+```
+
+tagged union が代数的データ型。ヒープを使う構造はすべて `Allocator` を受け取り、`defer` で解放する。`testing.allocator` がリークを検出する。
+
+### Gleam → [examples](../gleam/examples/03-data/)
+
+```gleam
+pub type Expr {
+  Num(Int)
+  Add(Expr, Expr)
+  Mul(Expr, Expr)
+}
+
+pub fn value_by_category(items: List(Item)) -> Dict(Category, Int) {
+  list.fold(items, dict.new(), fn(acc, i) {
+    dict.upsert(acc, i.category, fn(cur) { option.unwrap(cur, 0) + i.price * i.qty })
+  })
+}
+```
+
+すべて不変。`Item(..i, qty: 0)` で更新した新しい値を返す。`[first, ..rest]` でリストを分解。
+
+### Koka → [examples](../koka/examples/03-data/)
+
+```koka
+type expr
+  Num(n : int)
+  Add(l : expr, r : expr)
+  Mul(l : expr, r : expr)
+
+fun eval(e : expr) : div int
+  match e
+    Num(n) -> n
+    Add(l, r) -> eval(l) + eval(r)
+    Mul(l, r) -> eval(l) * eval(r)
+```
+
+再帰関数には `div` (発散しうる) 効果が付く。struct のフィールドはアクセサ関数になり、`i(qty = 0)` でコピー更新。
+
 ## 違いはどこから来るか
 
-1. **再帰型を「どう置くか」**。GC 言語 (MoonBit, OCaml, Lean, Dafny) は直接書ける。Rust no_std は所有権を明示する。Quint は無限の構造を排除し、Verse は継承で表す。
-2. **不変か可変か**。検証系 (Lean, Quint, Dafny) は不変が基本で、「更新」は新しい値を返す。実装系 (MoonBit, Rust, Verse) は可変が基本。OCaml は両方持つ。
-3. **Map をどう提供するか**。組込みリテラル (MoonBit, Quint, Verse, Dafny)、ファンクタ (OCaml)、標準ライブラリ (Lean, Rust alloc)、無し (Rust core)。
+1. **再帰型を「どう置くか」**。GC 言語 (MoonBit, OCaml, Lean, Dafny, Gleam, Koka) は直接書ける。Rust no_std と Zig はポインタと所有を明示する。Quint は無限の構造を排除し、Verse は継承で表す。
+2. **不変か可変か**。検証系 (Lean, Quint, Dafny) と BEAM / 効果系 (Gleam, Koka) は不変が基本で、「更新」は新しい値を返す。システム系 (MoonBit, Rust, Zig, Verse) は可変が基本。OCaml は両方持つ。
+3. **Map をどう提供するか**。組込みリテラル (MoonBit, Quint, Verse, Dafny)、ファンクタ (OCaml)、標準ライブラリ (Lean, Gleam, Rust alloc, Zig)、無し (Rust core)。Zig はアロケータを渡す点が独特。
 4. **Option の有無**。無い言語 (Quint, Dafny) は和型で自作するか集合で代用する。仕様記述では「候補の集合」の方が自然。
 5. **データ構造の性質を証明できるか**。Lean と Dafny は「filter しても合計が変わらない」を証明できる。他はテストで確認する。
 
@@ -155,5 +211,6 @@ pub fn value_by_category(items: &[Item]) -> [u32; 2] {   // Map の代わりに 
 |---|---|
 | 代数的データ型 + パターンマッチを気持ちよく書きたい | OxCaml, MoonBit, Lean |
 | データ構造の性質まで証明したい | Dafny (自動), Lean (手動) |
-| ヒープなしでデータ構造を組む訓練をしたい | Rust no_std |
+| ヒープなしでデータ構造を組む訓練をしたい | Rust no_std, Zig |
+| 不変データ + パターンマッチを小さな言語で学びたい | Gleam |
 | 集合と写像で「設計」を書きたい | Quint, Dafny |

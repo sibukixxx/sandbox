@@ -1,4 +1,4 @@
-# 05. 各言語の「目玉概念」を 7 言語で
+# 05. 各言語の「目玉概念」を 10 言語で
 
 各言語を学ぶ最大の理由になる機能を、同じ構成 (何を保証するか、どう書くか、何が起きるか) で並べる。
 
@@ -13,6 +13,9 @@
 | Verse | 失敗コンテキスト + 効果システム | 失敗時の自動ロールバック、効果の型追跡 | コンパイル時 (効果) / 実行時 (失敗) | 型検査 + ランタイム | 📝 未確認 |
 | Dafny | `requires` / `ensures` / `invariant` | 仕様が全入力で成り立つ | コンパイル時 | Z3 が自動証明 | ✅ |
 | Rust no_std | `#![no_main]` + ベアメタル実行 | OS も libc もない環境で動く | リンク時 / 実行時 | QEMU で実行 | ✅ |
+| Zig | comptime | ジェネリクス・テーブル生成・型検査をコンパイル時の通常コードで | コンパイル時 | コンパイラ (`@compileError`) | ✅ |
+| Gleam | 型付き OTP アクター | メッセージの型と、1 プロセス 1 メッセージの直列処理 | コンパイル時 (型) / 実行時 (プロセス) | 型検査 + BEAM | ✅ |
+| Koka | 代数的効果とハンドラ | 例外・状態・非決定性を 1 つの仕組みで。効果が型に出る | コンパイル時 (効果型) | 型検査 | ✅ |
 
 ## 言語ごとのコード
 
@@ -136,11 +139,68 @@ fn main() -> ! {
 
 `cortex-m-rt` が起動コードを、`memory.x` がメモリ配置を提供し、`cargo run` で QEMU の Cortex-M3 上で動く。OS も libc もない。
 
+### Zig: comptime → [examples](../zig/examples/04-core/)
+
+```zig
+fn Stack(comptime T: type, comptime capacity: usize) type {
+    return struct { items: [capacity]T = undefined, len: usize = 0, ... };
+}
+
+fn describe(comptime T: type) []const u8 {
+    return switch (@typeInfo(T)) {
+        .int => |info| if (info.signedness == .signed) "signed int" else "unsigned int",
+        .pointer => |p| if (p.size == .slice) "slice" else "pointer",
+        else => "other",
+    };
+}
+```
+
+型は値。コンパイル時に通常の Zig コードを走らせて、ジェネリクス、テーブル、型ごとのコード生成、リフレクションを 1 つの仕組みで行う。
+
+### Gleam: 型付き OTP アクター → [examples](../gleam/examples/04-core/)
+
+```gleam
+pub type Message {
+  Increment(by: Int)
+  Get(reply_to: Subject(Int))
+  Shutdown
+}
+
+fn handle(state: Int, msg: Message) -> actor.Next(Int, Message) {
+  case msg {
+    Increment(by) -> actor.continue(state + by)
+    Get(reply_to) -> { process.send(reply_to, state); actor.continue(state) }
+    Shutdown -> actor.stop()
+  }
+}
+```
+
+`Subject(Message)` に別の型は送れない。100 個のメッセージを同時に送ってもアクターは順番に処理し、状態は不変のまま更新される。
+
+### Koka: 代数的効果とハンドラ → [examples](../koka/examples/04-core/)
+
+```koka
+effect raise
+  ctl raise(msg : string) : int
+
+fun to-maybe(action : () -> <raise|e> a) : e maybe<a>
+  with ctl raise(_msg) Nothing        // resume しない = 例外
+  Just(action())
+
+fun with-default(default : int, action : () -> <raise|e> a) : e a
+  with ctl raise(_msg) resume(default) // resume する = 回復
+  action()
+```
+
+同じ `raise` を、ハンドラ次第で例外にも回復にもログ収集にもできる。`resume` を複数回呼べば非決定性 (全探索) になる。
+
 ## 違いはどこから来るか
 
-1. **「何を保証したいか」が言語の設計を決めている**。正しさ (Lean, Dafny, Quint)、性能 (OxCaml, Rust no_std)、実行環境 (MoonBit, Verse) の 3 方向に分かれる。
+1. **「何を保証したいか」が言語の設計を決めている**。正しさ (Lean, Dafny, Quint)、性能・制御 (OxCaml, Rust no_std, Zig)、実行環境 (MoonBit, Verse, Gleam)、効果 (Koka, Verse) の 4 方向に分かれる。
 2. **正しさ系の 3 言語は「誰が証明するか」が違う**。Lean は人が書く (最も強い)、Dafny は Z3 が自動 (最も楽)、Quint は探索で反例を探す (実装ではなく設計を対象)。
-3. **性能系の 2 言語は「既定」が逆**。Rust は全て明示で `no_std` はさらに削る方向、OxCaml は GC が既定で必要な所だけモードを足す方向。
+3. **性能系の 3 言語は「既定」が違う**。Rust は所有権で全て明示、Zig は明示だが検査は人 (アロケータを渡す)、OxCaml は GC が既定で必要な所だけモードを足す。
+3'. **効果系の 2 言語**。Koka はユーザーが効果を定義しハンドラで意味を与える。Verse は固定の効果指定子 + ロールバック。Koka で仕組みを学ぶと Verse や OCaml 5 が読める。
+3''. **並行の 1 言語**。Gleam だけがランタイム (BEAM) に並行モデルを持ち、それに型を付けた。
 4. **実行環境系の 2 言語は「ランタイムを持っている」**。MoonBit は WASM ランタイム、Verse は UEFN。ベアメタルの Rust とは対極。
 5. **失敗の扱い**。Verse の失敗コンテキスト + ロールバック、Quint の非決定性、Lean / Dafny の「証明できない = コンパイルエラー」は、いずれも「間違いを早く見つける」ための仕組み。
 
@@ -154,4 +214,7 @@ fn main() -> ! {
 | GC 言語で割り当てを制御したい | OxCaml | OxCaml switch を作り `[@zero_alloc]` を試す |
 | マイコン・OS を書きたい | Rust no_std | QEMU で動かしてから `memory.x` を実機に合わせる |
 | ブラウザで速いコードを動かしたい | MoonBit | `core.wasm` のサイズを見てから `web/index.html` を開く |
+| C の代わりに使える言語が欲しい | Zig | `describe(i32)` を自分の型で試す |
+| 並行サーバを型安全に書きたい | Gleam | アクターに `Decrement` メッセージを足す |
+| 効果システムを根本から理解したい | Koka | `raise` のハンドラをもう 1 つ書く (リトライなど) |
 | 新しい言語設計の思想に触れたい | Verse | `<transacts>` のロールバックを UEFN で確認する |

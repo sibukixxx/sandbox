@@ -1,4 +1,4 @@
-# 06. モジュールの扱い、を 7 言語で
+# 06. モジュールの扱い、を 10 言語で
 
 ## 結論 (一覧表)
 
@@ -11,6 +11,9 @@
 | Verse | フォルダ = モジュール (+ `:= module:`) | フォルダに置く | `using { Path }` | `<internal>` | `<public>` | 標準モジュールもパス (`/Verse.org/...`) |
 | Dafny | `module { }` | `module M { }` / `include "file"` | `import M` / `import opened M` / `import X = M` | 公開 | `export provides / reveals` | `abstract module` + `refines` で仕様と実装を分離 |
 | Rust no_std | `mod` 宣言 (ファイル or インライン) | `mod m;` / `mod m { }` | `use path` / `pub use` (再エクスポート) | 非公開 | `pub` / `pub(crate)` | feature フラグで `no_std` → `alloc` → `std` |
+| Zig | ファイル = struct | `@import("file.zig")`、`build.zig` で名前付き | `@import("name")` | 非公開 | `pub` | ビルドを Zig で書く (`build.zig`) |
+| Gleam | ファイルパス = モジュール | 自動 | `import a/b` / `.{X}` / `as u` | 非公開 | `pub` / `pub opaque type` | opaque type でコンストラクタを隠す |
+| Koka | ファイルパス = モジュール | `module a/b` | `import a/b`、`b/f` で修飾 | 非公開 | `pub` | 名前衝突をモジュール名で解決 |
 
 ## 言語ごとのコード
 
@@ -148,10 +151,61 @@ pub(crate) fn square(x: f32) -> f32 { x * x }
 
 `mod` を書いた場所がツリーを決める。feature フラグで `no_std` → `alloc` → `std` を段階的に有効化するのがライブラリの定石。
 
+### Zig → [examples](../zig/examples/05-modules/)
+
+```zig
+// build.zig
+const geometry = b.addModule("geometry", .{ .root_source_file = b.path("src/geometry/root.zig"), ... });
+const exe = b.addExecutable(.{ .root_module = b.createModule(.{
+    .root_source_file = b.path("src/main.zig"),
+    .imports = &.{.{ .name = "geometry", .module = geometry }},
+}) });
+
+// src/main.zig
+const geometry = @import("geometry");
+const units = @import("units.zig");
+```
+
+`@import` はファイルを struct として返す。名前付きモジュールは `build.zig` (Zig で書くビルドスクリプト) で登録する。
+
+### Gleam → [examples](../gleam/examples/05-modules/)
+
+```gleam
+import geometry/shape.{Circle, Rect}
+import units as u
+
+pub opaque type Meters {
+  Meters(Float)
+}
+pub fn meters(v: Float) -> Result(Meters, String) { ... }
+```
+
+`src/geometry/shape.gleam` が `geometry/shape`。`pub opaque type` で型だけ公開しコンストラクタを隠す。
+
+### Koka → [examples](../koka/examples/05-modules/)
+
+```koka
+module geometry/shape
+import std/num/float64
+
+pub type shape
+  Circle(r : float64)
+  Rect(w : float64, h : float64)
+
+pub fun area(s : shape) : float64 = ...
+```
+
+```koka
+import geometry/shape
+println(units/show(m))   // 標準の show と衝突するので修飾
+```
+
+ファイルパス = モジュール名。`pub` で公開。曖昧な名前は `モジュール/名前` で解決する。
+
 ## 違いはどこから来るか
 
-1. **「モジュールは何に対応するか」が 3 派に分かれる**。ファイル / ディレクトリ (OCaml, Lean, MoonBit, Verse)、明示的な宣言 (Rust, Dafny, Quint)、両方 (Lean の namespace, Verse の `:= module:`)。
-2. **既定が公開か非公開か**。Rust, MoonBit, Verse は非公開が既定で、公開するものに印を付ける。OCaml, Lean, Dafny, Quint は公開が既定で、隠すものに印を付ける (`.mli`, `private`, `export`)。
+1. **「モジュールは何に対応するか」が 3 派に分かれる**。ファイル / ディレクトリ (OCaml, Lean, MoonBit, Verse, Zig, Gleam, Koka)、明示的な宣言 (Rust, Dafny, Quint)、両方 (Lean の namespace, Verse の `:= module:`)。
+2. **既定が公開か非公開か**。Rust, MoonBit, Verse, Zig, Gleam, Koka は非公開が既定で、公開するものに印を付ける。OCaml, Lean, Dafny, Quint は公開が既定で、隠すものに印を付ける (`.mli`, `private`, `export`)。新しい言語ほど非公開既定を選んでいる。
 3. **モジュールが「値」になるか**。OCaml (ファンクタ、ファーストクラスモジュール) と Quint (instance 化) はモジュールをパラメータ化できる。Dafny は `refines` で仕様と実装を分ける。Rust / MoonBit は trait でその役割を担う。
 4. **公開の粒度**。MoonBit の `pub` / `pub(all)` / `pub(open)` と Dafny の `provides` / `reveals` は「見える」と「使える / 中身を知れる」を区別する。他の言語は 2 値。
 
@@ -163,3 +217,5 @@ pub(crate) fn square(x: f32) -> f32 { x * x }
 | 「ディレクトリ = パッケージ」の分かりやすさが欲しい | MoonBit, Verse |
 | 仕様と実装を分けて検証したい | Dafny |
 | 同じ部品を N 個並べて振る舞いを検証したい | Quint |
+| ビルドスクリプトも同じ言語で書きたい | Zig |
+| 型だけ公開して不変条件を守りたい | Gleam (opaque type), OxCaml (.mli) |

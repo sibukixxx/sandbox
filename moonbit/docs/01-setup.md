@@ -24,7 +24,7 @@ moonrun 0.1.20260827 (d0aaa07 2026-08-27)
 ## バージョン固定
 
 MoonBit は日付ベースでリリースされ、`moon update` / `moon upgrade` で最新になる。
-このリポジトリでは `.tool-versions` (作成予定) に `moon version --all` の出力を記録し、動作確認した版を残す。
+このリポジトリでは `.tool-versions` に `moon version --all` の出力を記録し、動作確認した版を残す。
 特定の版に戻すには `curl ... | bash -s <version>` を使う。
 
 ## 標準ライブラリ

@@ -23,11 +23,11 @@
 | 5 | `verse/` | Verse | Epic (UEFN) の関数論理型言語 | failure context、トランザクション、効果システム |
 | 6 | `dafny/` | Dafny | 検証指向言語 | 事前/事後条件・ループ不変条件をコンパイラが証明する |
 | 7 | `rust-no-std/` | Rust (`no_std`) | 標準ライブラリなし Rust | ベアメタル・組込み・WASM・カーネル空間での Rust |
-| 8 | (未定) | — | — | 候補は §9 参照 |
-| 9 | (未定) | — | — | 候補は §9 参照 |
-| 10 | (未定) | — | — | 候補は §9 参照 |
+| 8 | `zig/` | Zig | C の後継を狙うシステム言語 | comptime、明示的アロケータ、クロスコンパイル |
+| 9 | `gleam/` | Gleam | BEAM 上の静的型付き関数型言語 | 型付き OTP アクター、Erlang / JS 両ターゲット |
+| 10 | `koka/` | Koka | 効果システム中心の関数型言語 | 代数的効果とハンドラ、効果型 |
 
-7 言語が確定済み。残り 3 枠は §9 の候補から選ぶ。
+10 言語すべて確定 (8〜10 は §9 の候補からテーマの重複を避けて選定)。
 
 ### 2.1 テーマ横断マップ
 
@@ -36,9 +36,11 @@
 | テーマ | 言語 |
 |---|---|
 | 形式検証・証明 | Lean, Dafny, Quint |
-| 型システムの先端 | OxCaml, Lean, Verse |
-| 低レイヤ・性能 | Rust no_std, OxCaml, MoonBit(WASM) |
-| 新しい実行環境 | MoonBit(WASM/JS), Verse(UEFN), Rust no_std(組込み) |
+| 型システムの先端 | OxCaml, Lean, Verse, Koka |
+| 効果システム | Koka, Verse |
+| 低レイヤ・性能 | Rust no_std, Zig, OxCaml, MoonBit(WASM) |
+| 並行・分散 | Gleam(BEAM), Quint(設計検証) |
+| 新しい実行環境 | MoonBit(WASM/JS), Verse(UEFN), Rust no_std(組込み), Gleam(BEAM/JS) |
 
 トップ README ではこの表を掲載し、読者が興味のテーマから入れるようにする。
 
@@ -68,6 +70,9 @@
 ├── verse/
 ├── dafny/
 ├── rust-no-std/
+├── zig/
+├── gleam/
+├── koka/
 ├── scripts/                 # 各言語の検証スクリプト (ローカルと CI で共通)
 │   ├── common.sh
 │   ├── check-all.sh
@@ -235,6 +240,9 @@
 | Verse | UEFN のバージョン番号を `README.md` に記載 |
 | Dafny | `.tool-versions` にバージョン番号 |
 | Rust | `rust-toolchain.toml` |
+| Zig | `.tool-versions` にバージョン番号 |
+| Gleam | `.tool-versions` (gleam / erlang) + 各 example の `manifest.toml` |
+| Koka | `.tool-versions` にバージョン番号 |
 
 ## 7. CI 設計
 
@@ -252,8 +260,32 @@
 | Quint | `quint typecheck` + `quint run --invariant` |
 | Dafny | `dafny verify` + `dafny run` で期待出力と diff |
 | Rust | `cargo test` (host) + `cargo build --target <target>` + QEMU 実行 |
+| Zig | `zig run` + `zig test` + `zig build run/test` |
+| Gleam | `gleam run` + `gleam test` (Erlang / JS) |
+| Koka | `koka -e` で実行し出力を確認 |
 
-### 5.8 動作確認の記録 (2026-09-02)
+### 5.8 Zig (`zig/`)
+
+- ツールチェイン: ziglang.org のバイナリ (0.16.0)。0.x で破壊的変更が多いので版を固定
+- `05-core.md` = **comptime**
+- 章の要点: I/O (`init.io`)、`switch` / `?T` / `E!T`、tagged union とアロケータ、comptime、`build.zig` のモジュール
+- CI: バイナリを展開して `zig run` / `zig test` / `zig build`
+
+### 5.9 Gleam (`gleam/`)
+
+- ツールチェイン: GitHub Releases のバイナリ (1.18.0) + **Erlang/OTP 27 以上** (apt の 25 では動かない)
+- `05-core.md` = **型付き OTP アクター**
+- 章の要点: `case` / `use`、カスタム型と Dict、actor / send / call / spawn、`opaque type`
+- CI: `erlef/setup-beam` で OTP 27 + Gleam を入れ、`gleam run` / `gleam test`
+
+### 5.10 Koka (`koka/`)
+
+- ツールチェイン: GitHub Releases のバイナリ (3.2.2) + gcc
+- `05-core.md` = **代数的効果とハンドラ**
+- 章の要点: 効果型、`maybe` / `exn`、`type` / `struct`、`effect` / `with` / `resume`、`module` / `import`
+- CI: バイナリを展開して `koka -e`
+
+### 5.11 動作確認の記録 (2026-09-02)
 
 | 言語 | 確認したツールチェイン | 備考 |
 |---|---|---|
@@ -264,6 +296,9 @@
 | Verse | 未確認 | UEFN が必要 |
 | Dafny | 4.10.0 | 実行は `--target:js` (dotnet 不在のため)。`bignumber.js` が必要 |
 | Rust | cargo 1.94.1 stable | `thumbv7em-none-eabihf` ビルド、`thumbv7m-none-eabi` + QEMU 実行も確認 |
+| Zig | 0.16.0 | 全章確認。0.16 で `std.Io` に API が変わった |
+| Gleam | 1.18.0 + OTP 27.3 | 全章確認。OTP 27 はソースからビルド (apt は 25 で `~` sigil が解釈できない) |
+| Koka | 3.2.2 | 全章確認。標準ライブラリとの名前衝突 (`abs`, `sign`, `show`) に注意 |
 
 ## 8. 実装フェーズ
 
@@ -277,7 +312,7 @@
 | 3 | `docs/03〜04` + `examples/02〜03` | 完了 (Verse 以外は動作確認済み)。`comparison/04-data.md` も作成 |
 | 4 | `docs/05` + `examples/04` | 完了 (Verse と OxCaml は動作未確認)。`comparison/05-core.md` も作成 |
 | 5 | `docs/06`, `99` + `examples/05` | 完了 |
-| 6 | 残り 3 言語の選定と Phase 1〜5 の繰り返し | 10 言語揃う |
+| 6 | 残り 3 言語 (Zig, Gleam, Koka) の全章 + 比較 + check スクリプト | 完了 (全章ローカルで動作確認済み) |
 
 各 Phase で `docs/NN` を全言語分書いたら、同じ番号の `comparison/NN-*.md` も書く。
 
@@ -296,7 +331,7 @@ Phase 1 は **1 言語 1 PR** で進め、`_template/` の使い勝手を早期�
 | Idris 2 | 依存型 + 線形型を実用言語で | Lean, OxCaml |
 | Bend / HVM | 並列評価を自動化する関数型 | — |
 
-テーマの重複を避けるなら **Zig (低レイヤ)、Gleam (分散/BEAM)、Koka または Mojo** の組み合わせを推奨する。
+テーマの重複を避けるため **Zig (低レイヤ)、Gleam (分散/BEAM)、Koka (効果システム)** を採用した (Phase 6 で実装済み)。Mojo は Python 互換という別軸で、将来 11 言語目の候補として残す。
 
 ## 10. 追加時の手順（`_template/` の使い方）
 

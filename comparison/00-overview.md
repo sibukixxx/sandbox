@@ -1,4 +1,4 @@
-# 00. 7 言語の一覧
+# 00. 10 言語の一覧
 
 ## 一覧表
 
@@ -11,21 +11,27 @@
 | Verse | 関数論理型 | 静的 + 効果 | UEFN (Fortnite) | UEFN (Windows) | 失敗コンテキスト、効果システム | 中。UEFN の環境構築がハードル |
 | Dafny | 検証指向 (C# 風) | 静的 | C# / Go / Python / JS / Java に出力 | `dafny` (Z3 同梱) | requires / ensures の自動証明 | 低〜中。仕様の書き方に慣れれば早い |
 | Rust no_std | システム | 静的・所有権 | ベアメタル / 組込み / WASM | `cargo` + `rustup` target | std なしで OS レベルのコードを書く | 中。Rust 既習が前提 |
+| Zig | システム (C の後継) | 静的 | ネイティブ (クロスコンパイル標準) | `zig` 単体 | comptime、明示的アロケータ | 中。C を知っていれば低い |
+| Gleam | 関数型 (BEAM) | 静的・推論 | Erlang VM / JavaScript | `gleam` + Erlang/OTP 27+ | 型付き OTP アクター | 低。言語が小さい |
+| Koka | 関数型 (効果システム) | 静的・効果型 | ネイティブ (C 経由) / JS | `koka` + gcc | 代数的効果とハンドラ | 中〜高。効果の概念に慣れが必要 |
 
 ## テーマ別マップ
 
 | 学びたいこと | 第 1 候補 | 第 2 候補 | 理由 |
 |---|---|---|---|
 | 「正しさを証明する」を体験したい | Dafny | Lean 4 | Dafny は `ensures` を書くだけで自動証明。Lean は自分で証明を書くので深いが重い |
+| 効果システムを学びたい | Koka | Verse | Koka はユーザー定義の効果とハンドラ。Verse は固定の効果指定子 |
+| 並行・分散システムを型安全に書きたい | Gleam | Quint (設計検証) | BEAM の実績あるモデルに型が付く |
+| C の代わりを探している | Zig | Rust no_std | Zig は comptime と明示的アロケータ、Rust は所有権 |
 | 分散システムの設計を検証したい | Quint | — | 状態機械 + 不変条件 + モデル検査が一体 |
 | GC 言語のまま性能を追いたい | OxCaml | MoonBit | モードで割り当てを制御。MoonBit は WASM 出力が小さい |
-| OS のない環境で動かしたい | Rust no_std | MoonBit (WASM) | ベアメタルは Rust 一択。WASM ランタイム上なら MoonBit も |
+| OS のない環境で動かしたい | Rust no_std | Zig | どちらもベアメタル可。Rust は安全性、Zig は単純さ |
 | 新しい言語設計の思想に触れたい | Verse | Lean 4 | 失敗コンテキストと効果システムは他にない |
 | ブラウザ / エッジで動かしたい | MoonBit | Rust (wasm32) | wasm-gc 出力と JS 出力を切り替えられる |
 
 ## 各言語の「最初の 1 行」
 
-インストールから Hello World までの最短コマンド。詳細は各 `docs/01-setup.md` (作成予定) と `docs/02-hello-world.md`。
+インストールから Hello World までの最短コマンド。詳細は各 `docs/01-setup.md` と `docs/02-hello-world.md`。
 
 | 言語 | インストール | Hello World の実行 |
 |---|---|---|
@@ -36,6 +42,9 @@
 | Verse | UEFN を Epic Games Launcher から | UEFN で Launch Session |
 | Dafny | GitHub Releases のバイナリ or `dotnet tool install -g dafny` | `dafny run hello.dfy` |
 | Rust no_std | `rustup target add thumbv7em-none-eabihf` | `cargo run` |
+| Zig | `curl -fsSL https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz \| tar -xJ` | `zig run hello.zig` |
+| Gleam | GitHub Releases のバイナリ + Erlang/OTP 27 | `gleam run` |
+| Koka | GitHub Releases のバイナリ (gcc が必要) | `koka -e hello.kk` |
 
 ## 動作確認の状況 (2026-09-02)
 
@@ -47,4 +56,7 @@
 | Quint | 0.32.0 | すべて動作確認済み |
 | Verse | — | 未確認 (UEFN が必要) |
 | Dafny | 4.10.0 | すべて検証・実行済み (`--target:js`) |
-| Rust | 1.94.1 | すべて動作確認済み。`thumbv7em-none-eabihf` ビルドも確認 |
+| Rust | 1.94.1 | すべて動作確認済み。`thumbv7em-none-eabihf` ビルド、QEMU 実行も確認 |
+| Zig | 0.16.0 | すべて動作確認済み |
+| Gleam | 1.18.0 + OTP 27.3 | すべて動作確認済み (OTP 27 はソースからビルド) |
+| Koka | 3.2.2 | すべて動作確認済み |

@@ -19,3 +19,10 @@
 .vscode/
 .idea/
 .DS_Store
+# Zig
+**/zig-out/
+**/.zig-cache/
+# Koka
+**/.koka/
+# Gleam
+**/build/

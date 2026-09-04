@@ -29,7 +29,7 @@ dune --version
 ## バージョン固定
 
 - switch 名 (`5.2.0+ox`) を `README.md` に記載
-- `oxcaml/opam-repository` のコミットハッシュを `.tool-versions` (作成予定) に記録する。OxCaml は活発に変化しているため、日付も併記する
+- `oxcaml/opam-repository` のコミットハッシュを `.tool-versions` に記録する。OxCaml は活発に変化しているため、日付も併記する
 
 ## 標準 OCaml との使い分け
 
